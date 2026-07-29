@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DRAYVEN Teaser-Clip-Finder</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Teaser-Finder">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0B0713">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root {
+    --lila: #7C3AED;
+    --cyan: #06B6D4;
+    --bg: #0B0713;
+    --bg-card: #17101F;
+    --text: #F1E9FB;
+    --text-dim: #A896BF;
+    --border: #2E2140;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(ellipse at top, #1a0f2e 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 {
+    font-size: 22px; margin: 0 0 4px;
+    background: linear-gradient(90deg, var(--lila), var(--cyan));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-weight: 800;
+  }
+  .sub { color: var(--text-dim); font-size: 14px; margin-bottom: 24px; }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--cyan); margin: 0 0 14px;
+  }
+  label { display: block; font-size: 13px; color: var(--text-dim); margin: 12px 0 6px; }
+  label:first-of-type { margin-top: 0; }
+  input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    background: #0F0A18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; }
+  input[type="file"] { width: 100%; color: var(--text-dim); font-size: 14px; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  button {
+    background: linear-gradient(90deg, var(--lila), var(--cyan));
+    border: none; color: white; font-weight: 700; font-size: 15px;
+    padding: 13px 18px; border-radius: 10px; width: 100%; cursor: pointer; margin-top: 16px;
+  }
+  button:disabled { opacity: 0.4; }
+  button.secondary { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); }
+  button.small { width: auto; padding: 6px 10px; font-size: 12px; margin: 0; }
+  .status { font-size: 13px; color: var(--cyan); margin-top: 10px; min-height: 18px; }
+  .error { color: #FF6B6B; }
+  .bpm-display { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; }
+  .bpm-display .num { font-size: 32px; font-weight: 800; color: var(--cyan); }
+  .bpm-display .lbl { font-size: 13px; color: var(--text-dim); }
+  .mode-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+  .mode-toggle button {
+    margin-top: 0; flex: 1; background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 13px; padding: 8px;
+  }
+  .mode-toggle button.active { background: linear-gradient(90deg, var(--lila), var(--cyan)); color: white; border-color: transparent; }
+  .segment-row {
+    display: flex; gap: 10px; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .segment-row:last-child { border-bottom: none; }
+  .segment-row .time { font-size: 11px; color: var(--text-dim); width: 78px; flex-shrink: 0; }
+  .segment-row input { flex: 1; font-size: 13px; padding: 8px 10px; }
+  .clip { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+  .clip:last-child { border-bottom: none; }
+  .clip video { width: 96px; height: 54px; border-radius: 6px; object-fit: cover; background: #000; }
+  .clip .meta { flex: 1; font-size: 13px; }
+  .clip .meta .idx { color: var(--cyan); font-weight: 700; }
+  .clip .meta .kw { color: var(--text-dim); }
+  .clip .actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .clip a.dl {
+    color: var(--lila); text-decoration: none; font-size: 12px;
+    border: 1px solid var(--lila); padding: 5px 10px; border-radius: 6px; white-space: nowrap;
+  }
+  .clip button.reroll {
+    width: auto; margin: 0; padding: 5px 10px; font-size: 12px;
+    background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
+  }
+  #cutlistText { min-height: 140px; font-family: ui-monospace, monospace; font-size: 12px; color: var(--text-dim); }
+  .hint { font-size: 12px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DRAYVEN Teaser-Clip-Finder</h1>
+  <div class="sub">Song + Songtext rein → passende Stockclips raus → fertig für CapCut</div>
+
+  <!-- Schritt 1: Song -->
+  <div class="card">
+    <h2>1. Song hochladen (optional für BPM-Erkennung)</h2>
+    <input type="file" id="audioFile">
+    <div id="bpmBox" class="hidden">
+      <div class="bpm-display">
+        <div class="num" id="bpmValue">-</div>
+        <div class="lbl">BPM erkannt (Songlänge: <span id="durValue">-</span>)</div>
+      </div>
+      <label for="bpmOverride">BPM korrigieren, falls falsch erkannt</label>
+      <input type="number" id="bpmOverride" placeholder="BPM">
+    </div>
+    <label for="manualDuration">Songlänge in Sekunden (falls kein Audio hochgeladen)</label>
+    <input type="number" id="manualDuration" value="180">
+    <div class="status" id="audioStatus"></div>
+  </div>
+
+  <!-- Schritt 2: Songtext -> Segmente -->
+  <div class="card">
+    <h2>2. Segmente aus Songtext erzeugen</h2>
+    <label for="lyrics">Songtext (Zeile für Zeile einfügen, Strukturtags wie [Hook] werden ignoriert)</label>
+    <textarea id="lyrics" rows="10">Früher kannte ich kein Morgen
+Keine Uhr die mich kontrolliert
+Irgendwann ging das verloren
+Und du merkst nicht mal, wie's passiert
+
+Ja, früher kannte ich kein Morgen
+Heute rennt die Zeit, ich bleib allein
+Irgendwo ging das verloren
+Wann hörte ich auf, ich selbst zu sein?</textarea>
+    <div class="hint">Standardmäßig nur die Hook (typisch für TikTok-Teaser). Für mehr Clips einfach weitere Strophen einfügen.</div>
+    <div class="row">
+      <div>
+        <label for="startTime">Start im Song (mm:ss)</label>
+        <input type="text" id="startTime" placeholder="0:00" value="0:00">
+      </div>
+      <div>
+        <label for="endTime">Ende im Song (mm:ss, leer = Songende)</label>
+        <input type="text" id="endTime" placeholder="z.B. 0:38">
+      </div>
+    </div>
+    <label for="clipCount">Anzahl Clips</label>
+    <input type="number" id="clipCount" value="6">
+    <button id="genSegmentsBtn">Segmente erzeugen</button>
+    <div class="status" id="segStatus"></div>
+  </div>
+
+  <!-- Schritt 3: Segmente bearbeiten -->
+  <div class="card hidden" id="segmentsCard">
+    <h2>3. Suchbegriffe pro Segment (editierbar)</h2>
+    <div id="segmentsList"></div>
+    <label for="apiKey">Pexels API-Key</label>
+    <input type="text" id="apiKey" value="xKyBTm8K0qKGn1nBGkP5RbSdMfHM2ZIhPHAJdcBVYblF6fGOftoEwKQk">
+    <button id="searchBtn">Clips suchen</button>
+    <div class="status" id="searchStatus"></div>
+  </div>
+
+  <!-- Schritt 4: Ergebnisse -->
+  <div class="card hidden" id="resultsCard">
+    <h2>4. Gefundene Clips (Reihenfolge = Timeline)</h2>
+    <div id="clipsList"></div>
+    <button id="zipBtn">Alle als ZIP herunterladen</button>
+    <button id="cutlistBtn" class="secondary">Schnittliste anzeigen</button>
+    <div class="hint">
+      iPhone/Safari: Falls der ZIP-Download nicht startet, nutze die einzelnen "Öffnen"-Links pro Clip und speichere sie per Antippen-und-Halten in deine Fotos. Danach alle Clips in der angezeigten Reihenfolge in CapCut auf die Timeline ziehen und dort frei kürzen/verlängern.<br><br>
+      <strong>9:16-Format:</strong> Projekt in CapCut auf 9:16 stellen, dann bei jedem Clip antippen → Skalieren/"Fill" wählen (nicht "Fit") – so füllt das Video den Bildschirm komplett aus, auch wenn der Stockclip nicht exakt 9:16 ist.
+    </div>
+    <textarea id="cutlistText" class="hidden" readonly></textarea>
+  </div>
+</div>
+
+<script>
+// Alle Texte und Kommentare auf Deutsch.
+
+let audioBuffer = null;
+let detectedBPM = 0;
+let audioDuration = 0;
+let segments = [];       // { index, startSec, endSec, query }
+let assignedClips = [];  // { index, keyword, startSec, endSec, videoUrl, previewUrl }
+let queryPools = {};     // query -> { results: [...], idx }
+
+const audioFileInput = document.getElementById('audioFile');
+const audioStatus = document.getElementById('audioStatus');
+const bpmBox = document.getElementById('bpmBox');
+const bpmValue = document.getElementById('bpmValue');
+const durValue = document.getElementById('durValue');
+const bpmOverride = document.getElementById('bpmOverride');
+const manualDuration = document.getElementById('manualDuration');
+const segmentsCard = document.getElementById('segmentsCard');
+const segmentsList = document.getElementById('segmentsList');
+const resultsCard = document.getElementById('resultsCard');
+const clipsList = document.getElementById('clipsList');
+const cutlistText = document.getElementById('cutlistText');
+
+// --- Deutsch -> Englisch Wörterbuch für typische Rap-/Emotions-Begriffe ---
+const DE_EN = {
+  "morgen":"morning","uhr":"clock","zeit":"time","verloren":"lost","kindheit":"childhood",
+  "straßen":"streets","straße":"street","nacht":"night","laternen":"streetlights","laterne":"streetlight",
+  "welt":"world","schatten":"shadow","schein":"illusion light","problem":"problem","probleme":"problems",
+  "leben":"life","system":"system","schule":"school","träume":"dreams","traum":"dream",
+  "noten":"grades","wert":"value","stimme":"voice","stimmen":"voices","kalender":"calendar",
+  "seele":"soul","alltag":"everyday life","kind":"child","leichtigkeit":"lightness",
+  "spielte":"playing outside","spielten":"playing outside","spielen":"playing outside",
+  "sorglos":"carefree","glasklar":"crystal clear","freiheit":"freedom","druck":"pressure",
+  "erwachsen":"adult","erinnerung":"memory","erinnerungen":"memories","vergangenheit":"past",
+  "allein":"alone","einsam":"lonely","regen":"rain","stadt":"city","herz":"heart","liebe":"love",
+  "schmerz":"pain","hoffnung":"hope","dunkelheit":"darkness","licht":"light","weg":"road",
+  "reise":"journey","familie":"family","freunde":"friends","zuhause":"home","fenster":"window",
+  "himmel":"sky","wolken":"clouds","sonne":"sun","abend":"evening","fall":"falling",
+  "reich":"kingdom","gedacht":"thinking","bricht":"breaking","existiert":"existing"
+};
+
+const STOPWORDS = new Set([
+  "der","die","das","und","ist","ich","du","er","sie","es","wir","ihr","ein","eine","einen","einem","einer",
+  "nicht","kein","keine","zu","im","in","auf","an","am","mit","von","für","wie","was","wenn","dann","doch",
+  "noch","nur","auch","aber","so","als","bin","bist","sind","war","wird","werden","habe","hast","hat","haben",
+  "mich","dich","sich","mir","dir","uns","euch","mein","meine","dein","deine","sein","seine","ihre","kann",
+  "kannst","muss","musst","soll","sollst","will","willst","über","unter","vor","nach","bei","aus","ohne",
+  "durch","um","weil","dass","wo","hier","dort","jetzt","heute","immer","nie","alles","nichts","man","mal",
+  "damals","irgendwann","irgendwo","irgendwie","niemand","keiner","wieder","schon","mehr","warum","wie's",
+  "ja","je"
+]);
+
+// --- Schritt 1: Audio laden und BPM erkennen ---
+audioFileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  audioStatus.textContent = 'Analysiere Song ...';
+  audioStatus.classList.remove('error');
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    audioDuration = audioBuffer.duration;
+    detectedBPM = detectBPM(audioBuffer);
+
+    bpmValue.textContent = detectedBPM;
+    durValue.textContent = formatTime(audioDuration);
+    bpmOverride.value = detectedBPM;
+    bpmBox.classList.remove('hidden');
+    manualDuration.value = Math.round(audioDuration);
+    audioStatus.textContent = 'Song analysiert.';
+  } catch (err) {
+    audioStatus.textContent = 'Fehler beim Analysieren: ' + err.message;
+    audioStatus.classList.add('error');
+  }
+});
+
+function detectBPM(buffer) {
+  const data = buffer.getChannelData(0);
+  const sampleRate = buffer.sampleRate;
+  const hop = 512, frameSize = 1024;
+  const energies = [];
+  for (let i = 0; i + frameSize < data.length; i += hop) {
+    let sum = 0;
+    for (let j = 0; j < frameSize; j++) { const v = data[i + j]; sum += v * v; }
+    energies.push(Math.sqrt(sum / frameSize));
+  }
+  const onset = [];
+  for (let i = 1; i < energies.length; i++) {
+    const d = energies[i] - energies[i - 1];
+    onset.push(d > 0 ? d : 0);
+  }
+  const frameRate = sampleRate / hop;
+  const minBPM = 70, maxBPM = 180;
+  const minLag = Math.floor(frameRate * 60 / maxBPM);
+  const maxLag = Math.ceil(frameRate * 60 / minBPM);
+  let bestLag = minLag, bestScore = -Infinity;
+  for (let lag = minLag; lag <= maxLag; lag++) {
+    let score = 0;
+    for (let i = 0; i + lag < onset.length; i++) { score += onset[i] * onset[i + lag]; }
+    if (score > bestScore) { bestScore = score; bestLag = lag; }
+  }
+  return Math.round(60 * frameRate / bestLag);
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+// --- Songtext in Suchbegriffe je Segment umwandeln ---
+function extractKeywords(text, maxWords = 4) {
+  const words = text.toLowerCase()
+    .replace(/[.,!?;:()"'–-]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOPWORDS.has(w));
+  // Nur Woerter verwenden, die eine bekannte englische Uebersetzung haben -
+  // gemischte Deutsch/Englisch-Suchbegriffe liefern bei Pexels schlechte Treffer.
+  const translated = words.map(w => DE_EN[w]).filter(Boolean).slice(0, maxWords);
+  if (translated.length >= 2) return translated.join(' ');
+  // Fallback: generische Stimmungsbegriffe passend zum melancholischen Kindheits-Thema
+  return (translated.join(' ') + ' nostalgic childhood memories').trim();
+}
+
+function parseTimeToSeconds(str) {
+  if (!str) return null;
+  str = str.trim();
+  if (str === '') return null;
+  if (str.includes(':')) {
+    const parts = str.split(':').map(Number);
+    if (parts.some(isNaN)) return null;
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  const n = parseFloat(str);
+  return isNaN(n) ? null : n;
+}
+
+document.getElementById('genSegmentsBtn').addEventListener('click', () => {
+  const lyricsRaw = document.getElementById('lyrics').value;
+  const clipCount = parseInt(document.getElementById('clipCount').value) || 6;
+  const totalDuration = audioDuration || parseFloat(manualDuration.value) || 180;
+
+  const startBase = parseTimeToSeconds(document.getElementById('startTime').value) || 0;
+  const endInputVal = parseTimeToSeconds(document.getElementById('endTime').value);
+  const endBase = (endInputVal !== null && endInputVal > startBase) ? endInputVal : totalDuration;
+
+  const lines = lyricsRaw.split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0 && !/^\[.*\]$/.test(l));
+
+  if (lines.length === 0) {
+    document.getElementById('segStatus').textContent = 'Bitte Songtext einfügen.';
+    document.getElementById('segStatus').classList.add('error');
+    return;
+  }
+
+  const linesPerChunk = Math.max(1, Math.ceil(lines.length / clipCount));
+  const chunks = [];
+  for (let i = 0; i < clipCount; i++) {
+    const chunkLines = lines.slice(i * linesPerChunk, (i + 1) * linesPerChunk);
+    if (chunkLines.length === 0 && chunks.length > 0) break;
+    chunks.push(chunkLines.join(' '));
+  }
+
+  const rangeLength = endBase - startBase;
+  const segmentLength = rangeLength / chunks.length;
+  segments = chunks.map((chunk, i) => ({
+    index: i + 1,
+    startSec: startBase + i * segmentLength,
+    endSec: startBase + Math.min((i + 1) * segmentLength, rangeLength),
+    query: extractKeywords(chunk) || 'urban lifestyle'
+  }));
+
+  renderSegments();
+  segmentsCard.classList.remove('hidden');
+  document.getElementById('segStatus').textContent = segments.length + ' Segmente erzeugt (' + formatTime(startBase) + ' bis ' + formatTime(endBase) + '). Suchbegriffe unten pruefen/anpassen.';
+  document.getElementById('segStatus').classList.remove('error');
+});
+
+function renderSegments() {
+  segmentsList.innerHTML = '';
+  segments.forEach((seg, i) => {
+    const row = document.createElement('div');
+    row.className = 'segment-row';
+    row.innerHTML = `
+      <div class="time">#${String(seg.index).padStart(2, '0')} ${formatTime(seg.startSec)}</div>
+      <input type="text" data-idx="${i}" value="${seg.query}">
+    `;
+    segmentsList.appendChild(row);
+  });
+  segmentsList.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      segments[parseInt(e.target.dataset.idx)].query = e.target.value;
+    });
+  });
+}
+
+// --- Schritt 3: Clips pro Segment bei Pexels suchen ---
+document.getElementById('searchBtn').addEventListener('click', async () => {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const searchStatus = document.getElementById('searchStatus');
+  const btn = document.getElementById('searchBtn');
+  if (!apiKey) {
+    searchStatus.textContent = 'Bitte Pexels API-Key eingeben.';
+    searchStatus.classList.add('error');
+    return;
+  }
+  btn.disabled = true;
+  searchStatus.classList.remove('error');
+  assignedClips = [];
+  queryPools = {};
+
+  try {
+    for (const seg of segments) {
+      searchStatus.textContent = `Suche Clip #${seg.index} von ${segments.length} ("${seg.query}") ...`;
+      const pool = await fetchPool(seg.query, apiKey);
+      const picked = pool.results[pool.idx % pool.results.length] || null;
+      pool.idx++;
+      assignedClips.push({
+        index: seg.index,
+        keyword: seg.query,
+        startSec: seg.startSec,
+        endSec: seg.endSec,
+        videoUrl: picked ? picked.videoUrl : '',
+        previewUrl: picked ? picked.previewUrl : ''
+      });
+    }
+    renderClips();
+    resultsCard.classList.remove('hidden');
+    searchStatus.textContent = assignedClips.length + ' Clips zugewiesen.';
+  } catch (err) {
+    searchStatus.textContent = 'Fehler: ' + err.message;
+    searchStatus.classList.add('error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+async function fetchPool(query, apiKey) {
+  if (queryPools[query]) return queryPools[query];
+  const res = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=6&orientation=portrait`, {
+    headers: { Authorization: apiKey }
+  });
+  if (!res.ok) throw new Error(`Pexels-Fehler bei "${query}": ${res.status}`);
+  const json = await res.json();
+  const results = (json.videos || []).map(v => {
+    const file = pickVideoFile(v.video_files);
+    return file ? { videoUrl: file.link, previewUrl: v.image, id: v.id } : null;
+  }).filter(Boolean);
+  queryPools[query] = { results: results.length ? results : [{ videoUrl: '', previewUrl: '', id: 0 }], idx: 0 };
+  return queryPools[query];
+}
+
+function pickVideoFile(files) {
+  if (!files || files.length === 0) return null;
+  const hd = files.find(f => f.quality === 'hd' && f.width <= 1080);
+  if (hd) return hd;
+  const sorted = [...files].sort((a, b) => (a.width || 0) - (b.width || 0));
+  return sorted[Math.min(1, sorted.length - 1)];
+}
+
+function renderClips() {
+  clipsList.innerHTML = '';
+  assignedClips.forEach((clip, i) => {
+    const div = document.createElement('div');
+    div.className = 'clip';
+    div.innerHTML = `
+      <video src="${clip.videoUrl}" muted playsinline preload="metadata"></video>
+      <div class="meta">
+        <div><span class="idx">#${String(clip.index).padStart(2, '0')}</span> ${formatTime(clip.startSec)}-${formatTime(clip.endSec)}</div>
+        <div class="kw">${clip.keyword}</div>
+      </div>
+      <div class="actions">
+        <a class="dl" href="${clip.videoUrl}" download="${String(clip.index).padStart(2, '0')}_clip.mp4" target="_blank" rel="noopener">Oeffnen</a>
+        <button class="reroll" data-i="${i}">Anderes Video</button>
+      </div>
+    `;
+    clipsList.appendChild(div);
+  });
+  clipsList.querySelectorAll('button.reroll').forEach(b => {
+    b.addEventListener('click', async (e) => {
+      const i = parseInt(e.target.dataset.i);
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const clip = assignedClips[i];
+      const pool = await fetchPool(clip.keyword, apiKey);
+      const next = pool.results[pool.idx % pool.results.length];
+      pool.idx++;
+      clip.videoUrl = next.videoUrl;
+      clip.previewUrl = next.previewUrl;
+      renderClips();
+    });
+  });
+}
+
+// --- Alles als ZIP herunterladen ---
+document.getElementById('zipBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('zipBtn');
+  btn.disabled = true;
+  btn.textContent = 'Erstelle ZIP ...';
+  try {
+    const zip = new JSZip();
+    for (const clip of assignedClips) {
+      if (!clip.videoUrl) continue;
+      const res = await fetch(clip.videoUrl);
+      if (!res.ok) throw new Error('Download fehlgeschlagen fuer Clip #' + clip.index);
+      const blob = await res.blob();
+      zip.file(`${String(clip.index).padStart(2, '0')}_clip.mp4`, blob);
+    }
+    zip.file('schnittliste.txt', buildCutlistText());
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'drayven-teaser-clips.zip';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    btn.textContent = 'Alle als ZIP herunterladen';
+  } catch (err) {
+    alert('ZIP-Download nicht moeglich (evtl. CORS-Sperre): ' + err.message + '. Nutze stattdessen die einzelnen "Oeffnen"-Links pro Clip.');
+    btn.textContent = 'Alle als ZIP herunterladen';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function buildCutlistText() {
+  let out = 'DRAYVEN Teaser - Schnittliste fuer CapCut\n';
+  out += 'Reihenfolge exakt wie unten in CapCut auf die Timeline ziehen:\n\n';
+  assignedClips.forEach(clip => {
+    out += `#${String(clip.index).padStart(2, '0')}  ${formatTime(clip.startSec)}-${formatTime(clip.endSec)}  |  Suchbegriff: ${clip.keyword}\n`;
+  });
+  return out;
+}
+
+document.getElementById('cutlistBtn').addEventListener('click', () => {
+  cutlistText.value = buildCutlistText();
+  cutlistText.classList.toggle('hidden');
+});
+</script>
+</body>
+</html>

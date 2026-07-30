@@ -164,6 +164,17 @@ Wann hörte ich auf, ich selbst zu sein?</textarea>
     <div class="status" id="segStatus"></div>
   </div>
 
+  <!-- Mehrere Videos automatisch erzeugen -->
+  <div class="card">
+    <h2>🎬 Mehrere Videos auf einmal</h2>
+    <label for="videoCount">Anzahl Videos</label>
+    <input type="number" id="videoCount" value="10">
+    <div class="hint">Jedes Video bekommt zufällig 4-7 Clips, alle sauber getrennt als "Video 1", "Video 2" usw. Nutzt Songtext, Start/Ende und API-Key von oben bzw. unten.</div>
+    <button id="bulkGenerateBtn">Los – Videos erzeugen</button>
+    <div class="status" id="bulkStatus"></div>
+  </div>
+  <div id="bulkResults"></div>
+
   <!-- Schritt 3: Segmente bearbeiten -->
   <div class="card hidden" id="segmentsCard">
     <h2>3. Suchbegriffe pro Segment (editierbar)</h2>
@@ -527,6 +538,144 @@ document.getElementById('cutlistBtn').addEventListener('click', () => {
   cutlistText.value = buildCutlistText();
   cutlistText.classList.toggle('hidden');
 });
+
+// --- Mehrere Videos automatisch erzeugen (jedes Video eigene Clip-Gruppe) ---
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function segmentsFromLyrics(lyricsRaw, clipCount, startBase, endBase) {
+  const lines = lyricsRaw.split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0 && !/^\[.*\]$/.test(l));
+  if (lines.length === 0) return [];
+  const linesPerChunk = Math.max(1, Math.ceil(lines.length / clipCount));
+  const chunks = [];
+  for (let i = 0; i < clipCount; i++) {
+    const chunkLines = lines.slice(i * linesPerChunk, (i + 1) * linesPerChunk);
+    if (chunkLines.length === 0 && chunks.length > 0) break;
+    chunks.push(chunkLines.join(' '));
+  }
+  const rangeLength = endBase - startBase;
+  const segmentLength = rangeLength / chunks.length;
+  return chunks.map((chunk, i) => ({
+    index: i + 1,
+    startSec: startBase + i * segmentLength,
+    endSec: startBase + Math.min((i + 1) * segmentLength, rangeLength),
+    query: extractKeywords(chunk) || 'urban lifestyle'
+  }));
+}
+
+const bulkResults = document.getElementById('bulkResults');
+const bulkStatus = document.getElementById('bulkStatus');
+
+document.getElementById('bulkGenerateBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('bulkGenerateBtn');
+  const videoCount = parseInt(document.getElementById('videoCount').value) || 10;
+  const lyricsRaw = document.getElementById('lyrics').value;
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const totalDuration = audioDuration || parseFloat(manualDuration.value) || 180;
+  const startBase = parseTimeToSeconds(document.getElementById('startTime').value) || 0;
+  const endInputVal = parseTimeToSeconds(document.getElementById('endTime').value);
+  const endBase = (endInputVal !== null && endInputVal > startBase) ? endInputVal : totalDuration;
+
+  if (!apiKey) {
+    bulkStatus.textContent = 'Bitte Pexels API-Key eintragen (Feld unter "Suchbegriffe pro Segment").';
+    bulkStatus.classList.add('error');
+    return;
+  }
+  if (!lyricsRaw.trim()) {
+    bulkStatus.textContent = 'Bitte Songtext einfuegen.';
+    bulkStatus.classList.add('error');
+    return;
+  }
+
+  btn.disabled = true;
+  bulkResults.innerHTML = '';
+  bulkStatus.classList.remove('error');
+
+  try {
+    for (let v = 1; v <= videoCount; v++) {
+      const clipCount = randomInt(4, 7);
+      bulkStatus.textContent = `Video ${v}/${videoCount}: suche ${clipCount} Clips ...`;
+      const segs = segmentsFromLyrics(lyricsRaw, clipCount, startBase, endBase);
+      const videoClips = [];
+      for (const seg of segs) {
+        const pool = await fetchPool(seg.query, apiKey);
+        const picked = pool.results[pool.idx % pool.results.length] || null;
+        pool.idx++;
+        videoClips.push({ ...seg, videoUrl: picked ? picked.videoUrl : '' });
+      }
+      renderVideoGroup(v, videoClips);
+    }
+    bulkStatus.textContent = videoCount + ' Videos fertig erzeugt.';
+  } catch (err) {
+    bulkStatus.textContent = 'Fehler: ' + err.message;
+    bulkStatus.classList.add('error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function renderVideoGroup(videoNum, clips) {
+  const section = document.createElement('div');
+  section.className = 'card';
+  const listId = 'bulk-clips-' + videoNum;
+  section.innerHTML = `
+    <h2>Video ${videoNum} (${clips.length} Clips)</h2>
+    <div id="${listId}"></div>
+    <button class="bulk-zip-btn">Video ${videoNum} als ZIP</button>
+  `;
+  bulkResults.appendChild(section);
+
+  const container = section.querySelector('#' + listId);
+  clips.forEach(clip => {
+    const div = document.createElement('div');
+    div.className = 'clip';
+    div.innerHTML = `
+      <video src="${clip.videoUrl}" muted playsinline preload="metadata"></video>
+      <div class="meta">
+        <div><span class="idx">#${String(clip.index).padStart(2, '0')}</span> ${formatTime(clip.startSec)}-${formatTime(clip.endSec)}</div>
+        <div class="kw">${clip.query}</div>
+      </div>
+      <a class="dl" href="${clip.videoUrl}" download="${String(clip.index).padStart(2, '0')}_clip.mp4" target="_blank" rel="noopener">Oeffnen</a>
+    `;
+    container.appendChild(div);
+  });
+
+  section.querySelector('.bulk-zip-btn').addEventListener('click', async (e) => {
+    const zipBtn = e.target;
+    zipBtn.disabled = true;
+    zipBtn.textContent = 'Erstelle ZIP ...';
+    try {
+      const zip = new JSZip();
+      for (const clip of clips) {
+        if (!clip.videoUrl) continue;
+        const res = await fetch(clip.videoUrl);
+        if (!res.ok) throw new Error('Download fehlgeschlagen fuer Clip #' + clip.index);
+        const blob = await res.blob();
+        zip.file(`${String(clip.index).padStart(2, '0')}_clip.mp4`, blob);
+      }
+      let cutlist = `DRAYVEN Teaser - Video ${videoNum} - Schnittliste fuer CapCut\n\n`;
+      clips.forEach(c => {
+        cutlist += `#${String(c.index).padStart(2, '0')}  ${formatTime(c.startSec)}-${formatTime(c.endSec)}  |  Suchbegriff: ${c.query}\n`;
+      });
+      zip.file('schnittliste.txt', cutlist);
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url; a.download = `video-${videoNum}-clips.zip`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      zipBtn.textContent = `Video ${videoNum} als ZIP`;
+    } catch (err) {
+      alert('ZIP-Download nicht moeglich (evtl. CORS-Sperre): ' + err.message + '. Nutze stattdessen die einzelnen "Oeffnen"-Links pro Clip.');
+      zipBtn.textContent = `Video ${videoNum} als ZIP`;
+    } finally {
+      zipBtn.disabled = false;
+    }
+  });
+}
 </script>
 </body>
 </html>

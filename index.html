@@ -561,7 +561,7 @@
           <span class="new-badge">NEU</span> Neueste Veröffentlichung
         </p>
         <a id="new-release-link" class="new-release-card" href="#" target="_blank" rel="noopener">
-          <img id="new-release-cover" class="new-release-cover" src="" alt="">
+          <img id="new-release-cover" class="new-release-cover" src="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=" alt="">
           <div class="new-release-info">
             <div id="new-release-name" class="new-release-name"></div>
             <div id="new-release-date" class="new-release-sub"></div>
@@ -739,6 +739,7 @@
     window.__spotifyOk = false;
     function applyRelease() {
       const data = window.__release; if (!data) return;
+      document.getElementById('new-release-cover').alt = data.name;
       document.getElementById('new-release-cover').src = data.image;
       document.getElementById('new-release-embed-wrap').innerHTML =
         '<iframe src="https://open.spotify.com/embed/album/' + data.id + '?utm_source=generator&theme=0" ' +
@@ -762,7 +763,6 @@
         if (data.error || !data.id) return;
 
         window.__release = data;
-        document.getElementById('new-release-cover').alt = data.name;
         document.getElementById('new-release-name').textContent = data.name;
         document.getElementById('new-release-date').textContent =
           (data.type === 'single' ? 'Single' : 'Album') + ' · ' + data.release_date;

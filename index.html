@@ -4,9 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DRAYVEN – Offizielle Website</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fonts/fonts.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -445,6 +443,15 @@
       .live-dot { animation: none; }
     }
   </style>
+  <style>
+    .legal h3{font-size:13px;color:#e8e8e0;font-weight:600;margin:20px 0 4px}
+    .legal p{margin-bottom:8px}
+    .legal b{color:#e8e8e0;font-weight:500}
+    .consent-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 22px;text-align:center}
+    .consent-box p{font-size:12px;color:#888;line-height:1.6;margin:10px 0 18px}
+    .consent-box button{background:linear-gradient(135deg,#8B5CF6,#06B6D4);border:0;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;padding:12px 20px;border-radius:2px;cursor:pointer}
+    .consent-box a{color:#06B6D4}
+  </style>
 </head>
 <body>
 
@@ -564,18 +571,13 @@
         <div id="new-release-embed-wrap" class="spotify-embed-wrap" style="margin-top:10px;"></div>
       </div>
 
-      <!-- LIVE SPOTIFY-EMBED: aktualisiert sich automatisch bei jedem neuen Release -->
-      <div class="spotify-embed-wrap">
-        <iframe
-          src="https://open.spotify.com/embed/artist/0u8iRkDlzVAihSqD0i78Od?utm_source=generator&theme=0"
-          width="100%"
-          height="660"
-          style="border-radius:12px;border:none;"
-          frameborder="0"
-          allowfullscreen=""
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy">
-        </iframe>
+      <!-- SPOTIFY-PLAYER: wird erst nach Klick geladen (Datenschutz) -->
+      <div class="spotify-embed-wrap" id="spotify-wrap">
+        <div class="consent-box">
+          <p style="color:#e8e8e0;font-size:13px;margin-top:0;">Spotify-Player</p>
+          <p>Beim Laden des Players werden Daten (z. B. deine IP-Adresse) an Spotify übertragen. Mehr dazu in der <a href="#datenschutz" onclick="document.getElementById('datenschutz-modal').style.display='flex'">Datenschutzerklärung</a>.</p>
+          <button type="button" onclick="loadSpotify()">SPOTIFY-PLAYER LADEN</button>
+        </div>
       </div>
     </aside>
 
@@ -621,7 +623,7 @@
   </div>
 
   <footer>
-    <p>© 2025 DRAYVEN &nbsp;·&nbsp; <a href="https://www.tiktok.com/@drayvenmusik" target="_blank" rel="noopener">@drayvenmusik</a> &nbsp;·&nbsp; <a href="https://open.spotify.com/intl-de/artist/0u8iRkDlzVAihSqD0i78Od" target="_blank" rel="noopener">Spotify</a> &nbsp;·&nbsp; KI-generierte Musik · Alle Rechte vorbehalten</p>
+    <p>© 2026 DRAYVEN &nbsp;·&nbsp; <a href="https://www.tiktok.com/@drayvenmusik" target="_blank" rel="noopener">@drayvenmusik</a> &nbsp;·&nbsp; <a href="https://open.spotify.com/intl-de/artist/0u8iRkDlzVAihSqD0i78Od" target="_blank" rel="noopener">Spotify</a> &nbsp;·&nbsp; KI-generierte Musik · Alle Rechte vorbehalten</p>
     <p style="margin-top:8px;">
       <a href="#impressum" onclick="document.getElementById('impressum-modal').style.display='flex'">Impressum</a>
       &nbsp;·&nbsp;
@@ -631,47 +633,126 @@
 
   <!-- IMPRESSUM MODAL -->
   <div id="impressum-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:24px;">
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:2px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:40px;position:relative;">
-      <button onclick="document.getElementById('impressum-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;">✕</button>
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:2px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;padding:40px;position:relative;">
+      <button onclick="document.getElementById('impressum-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;" aria-label="Schließen">✕</button>
       <p style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;color:#8B5CF6;margin-bottom:12px;">● IMPRESSUM</p>
       <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8e8e0;margin-bottom:24px;">Impressum</h2>
-      <div style="font-size:13px;color:#aaa;line-height:1.8;">
-        <p style="color:#e8e8e0;font-weight:500;margin-bottom:4px;">Angaben gemäß § 5 DDG</p>
-        <p>Thomas Pikon<br>c/o SourceArt<br>Fritz-Thiele-Straße 3<br>28279 Bremen</p>
-        <p style="margin-top:16px;"><strong style="color:#e8e8e0;">Kontakt</strong><br>E-Mail: info@drayven.de</p>
-        <p style="margin-top:16px;"><strong style="color:#e8e8e0;">Verantwortlich für den Inhalt</strong><br>Thomas Pikon (Anschrift wie oben)</p>
-        <p style="margin-top:16px;"><strong style="color:#e8e8e0;">Haftung für Inhalte</strong><br>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.</p>
-        <p style="margin-top:16px;"><strong style="color:#e8e8e0;">Haftung für Links</strong><br>Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
-        <p style="margin-top:16px;"><strong style="color:#e8e8e0;">Urheberrecht</strong><br>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+      <div class="legal" style="font-size:13px;color:#aaa;line-height:1.8;">
+<h3>Angaben gemäß § 5 DDG</h3>
+<p>Thomas Pikon (Künstlername: DRAYVEN)<br>c/o SourceArt - VM-000010189<br>Fritz-Thiele-Straße 3<br>28279 Bremen-Obervieland<br>Deutschland</p>
+
+<h3>Kontakt</h3>
+<p>E-Mail: info@drayven.de</p>
+
+<h3>Umsatzsteuer-Identifikationsnummer</h3>
+<p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: DE359548999</p>
+
+<h3>Verantwortlich für den Inhalt</h3>
+<p>Verantwortlich im Sinne von § 18 Abs. 2 MStV: Thomas Pikon, Anschrift wie oben.</p>
+
+<h3>Hinweis zu KI-generierter Musik</h3>
+<p>Die auf dieser Website angebotene Musik wird mit Unterstützung künstlicher Intelligenz erstellt. Bei der Seite DRAYVEN Live werden Songs von Teilnehmenden vorgestellt, die ebenfalls mit KI-Werkzeugen entstanden sein können.</p>
+
+<h3>Verbraucherstreitbeilegung</h3>
+<p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+
+<h3>Haftung für Inhalte</h3>
+<p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen entfernen wir diese Inhalte umgehend.</p>
+
+<h3>Eingereichte Inhalte (DRAYVEN Live)</h3>
+<p>Songs, Cover und Texte, die von Teilnehmenden eingereicht werden, sind fremde Inhalte. Für deren Rechtmäßigkeit sind die Einreichenden verantwortlich. Wenn du eine Rechtsverletzung vermutest, schreibe uns bitte mit einer genauen Beschreibung an info@drayven.de. Wir prüfen den Hinweis und entfernen den Inhalt bei Berechtigung unverzüglich.</p>
+
+<h3>Haftung für Links</h3>
+<p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar. Bei Bekanntwerden von Rechtsverletzungen entfernen wir derartige Links umgehend.</p>
+
+<h3>Urheberrecht</h3>
+<p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem deutschen Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Die Rechte an eingereichten Songs verbleiben bei den jeweiligen Rechteinhabern.</p>
+
       </div>
     </div>
   </div>
 
   <!-- DATENSCHUTZ MODAL -->
   <div id="datenschutz-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:24px;">
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:2px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:40px;position:relative;">
-      <button onclick="document.getElementById('datenschutz-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;">✕</button>
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:2px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;padding:40px;position:relative;">
+      <button onclick="document.getElementById('datenschutz-modal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:20px;cursor:pointer;" aria-label="Schließen">✕</button>
       <p style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.3em;color:#8B5CF6;margin-bottom:12px;">● DATENSCHUTZ</p>
       <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#e8e8e0;margin-bottom:24px;">Datenschutzerklärung</h2>
-      <div style="font-size:13px;color:#aaa;line-height:1.8;">
-        <p style="color:#e8e8e0;font-weight:500;margin-bottom:4px;">1. Verantwortlicher</p>
-        <p>Thomas Pikon, c/o SourceArt, Fritz-Thiele-Straße 3, 28279 Bremen<br>E-Mail: info@drayven.de</p>
-        <p style="margin-top:16px;color:#e8e8e0;font-weight:500;">2. Datenerfassung auf dieser Website</p>
-        <p>Diese Website ist eine reine Informationsseite. Es werden keine personenbezogenen Daten erfasst oder verarbeitet. Es werden keine Cookies gesetzt.</p>
-        <p style="margin-top:16px;color:#e8e8e0;font-weight:500;">3. Externe Links</p>
-        <p>Diese Website enthält Links zu Spotify, YouTube, TikTok, Apple Music, SoundCloud und Amazon Music. Beim Klicken dieser Links gelten die Datenschutzbestimmungen der jeweiligen Anbieter.</p>
-        <p style="margin-top:16px;color:#e8e8e0;font-weight:500;">4. Ihre Rechte</p>
-        <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer Daten sowie das Recht auf Datenübertragbarkeit. Wenden Sie sich dazu an: info@drayven.de</p>
-        <p style="margin-top:16px;color:#e8e8e0;font-weight:500;">5. Beschwerderecht</p>
-        <p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Die zuständige Aufsichtsbehörde für NRW ist die Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen.</p>
+      <div class="legal" style="font-size:13px;color:#aaa;line-height:1.8;">
+<h3>1. Verantwortlicher</h3>
+<p>Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der DSGVO ist:<br>Thomas Pikon (Künstlername: DRAYVEN)<br>c/o SourceArt - VM-000010189, Fritz-Thiele-Straße 3, 28279 Bremen-Obervieland, Deutschland<br>E-Mail: info@drayven.de</p>
+
+<h3>2. Allgemeines</h3>
+<p>Wir verarbeiten personenbezogene Daten nur, soweit es zur Bereitstellung der Website, zur Durchführung von DRAYVEN Live oder zur Beantwortung von Anfragen erforderlich ist, oder soweit du eingewilligt hast. Rechtsgrundlagen sind Art. 6 Abs. 1 lit. a DSGVO (Einwilligung), lit. b (Durchführung der Teilnahme bzw. vorvertragliche Maßnahmen) und lit. f (berechtigtes Interesse am sicheren und fehlerfreien Betrieb der Website). Diese Website verwendet keine Cookies zu Werbe- oder Analysezwecken und kein Tracking.</p>
+
+<h3>3. Hosting und Server-Logfiles</h3>
+<p><b>drayven.de</b> wird über GitHub Pages bereitgestellt (GitHub Inc., eine Tochter der Microsoft Corporation, USA). <b>DRAYVEN Live</b> läuft auf der Infrastruktur von Cloudflare (Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA): Webauslieferung, Datenbank (Region Westeuropa) und Dateispeicher.</p>
+<p>Beim Aufruf der Seiten werden technisch notwendig Daten verarbeitet, insbesondere die IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browsertyp und Betriebssystem. Dies dient der Auslieferung, der Sicherheit und der Fehleranalyse (Art. 6 Abs. 1 lit. f DSGVO). Mit den Anbietern bestehen Verträge zur Auftragsverarbeitung. Eine Übermittlung in die USA ist möglich und erfolgt auf Grundlage des EU-US Data Privacy Framework bzw. von Standardvertragsklauseln.</p>
+
+<h3>4. Schriftarten</h3>
+<p>Die verwendeten Schriftarten werden von unseren eigenen Servern geladen. Es erfolgt dabei keine Verbindung zu Google.</p>
+
+<h3>5. Spotify-Player (nur nach Klick)</h3>
+<p>Auf drayven.de kannst du einen Spotify-Player einblenden. Er wird erst nach deinem Klick auf „Spotify-Player laden“ geladen. Dabei wird eine Verbindung zu Spotify AB, Regeringsgatan 19, 111 53 Stockholm, Schweden, hergestellt, und Spotify kann Daten wie deine IP-Adresse erhalten sowie Cookies setzen. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG), die du durch den Klick erteilst. Ohne Klick findet keine Übertragung statt. Weitere Informationen findest du in der Datenschutzerklärung von Spotify.</p>
+
+<h3>6. Anzeige der neuesten Veröffentlichung</h3>
+<p>Beim Aufruf von drayven.de wird in deinem Browser eine Anfrage an einen von uns betriebenen Cloudflare-Worker gesendet, der öffentlich verfügbare Informationen zur neuesten Veröffentlichung (Titel, Cover, Datum) abruft. Dabei wird technisch bedingt deine IP-Adresse an Cloudflare übermittelt. Wir speichern darüber keine personenbezogenen Daten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (aktuelle und fehlerfreie Darstellung unseres Angebots).</p>
+
+<h3>7. Externe Links</h3>
+<p>Diese Website enthält Links zu Spotify, YouTube, TikTok, Apple Music, SoundCloud und Amazon Music. Erst wenn du einen Link anklickst, werden Daten an den jeweiligen Anbieter übertragen. Es gelten dann deren Datenschutzbestimmungen.</p>
+
+<h3>8. DRAYVEN Live: Song-Einreichung</h3>
+<p><b>Daten:</b> Wenn du einen Song einreichst, verarbeiten wir die von dir eingegebenen Angaben: Künstlername, TikTok-Name, Songtitel, Link und/oder hochgeladene Audiodatei (MP3/WAV), Songlänge, optional Kurztext und Cover, deine Zustimmungen (mit Zeitpunkt) sowie den Einreichungszeitpunkt. Die Angabe der Pflichtfelder ist für die Teilnahme erforderlich, ohne sie ist eine Teilnahme nicht möglich.</p>
+<p><b>Zwecke und Rechtsgrundlagen:</b> Durchführung der Show (Warteliste, Reihenfolge, Abspielen, Bewertung, Feedback) auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Die Veröffentlichung von Künstlername, Songtitel und Songlänge in der öffentlichen Reihenfolge auf der Seite, im Live-Stream, in der Hit-Playlist sowie die Veröffentlichung von Ausschnitten als Clips auf Social Media beruht auf deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) bzw. der Durchführung der Teilnahme. Die Aufnahme in das DRAYVEN-Radio ist freiwillig und beruht ausschließlich auf deiner gesonderten Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die Rechte an deinem Song bleiben bei dir.</p>
+<p><b>Songlänge:</b> Um die Länge deines Songs zu ermitteln, ruft unser Server bei Spotify, YouTube bzw. SoundCloud die öffentliche Seite deines Links ab. Dabei wird nur der von dir angegebene Link verwendet, keine weiteren Daten von dir.</p>
+<p><b>Widerruf:</b> Du kannst jede Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen, zum Beispiel per E-Mail an info@drayven.de. Dein Song wird dann zeitnah aus Radio und Playlist entfernt. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt.</p>
+<p><b>Speicherdauer:</b> Einreichungsdaten (Name, TikTok-Name, Link, Songlänge, Kurztext, Cover) werden spätestens sechs Monate nach der jeweiligen Show gelöscht. Hochgeladene Audiodateien werden nach der Show gelöscht, sofern du nicht am Radio teilnimmst. Radio-Dateien werden bis zu deinem Widerruf bzw. bis zur Entfernung aus dem Radio gespeichert. Nachweise über deine Zustimmungen können zur Verteidigung gegen Rechtsansprüche bis zum Ablauf der gesetzlichen Verjährungsfrist aufbewahrt werden (Art. 6 Abs. 1 lit. f DSGVO).</p>
+<p><b>Empfänger:</b> Cloudflare als Hosting-Dienstleister (siehe Punkt 3). Bei Veröffentlichung auf TikTok oder in Playlists gelten zusätzlich die Bedingungen der jeweiligen Plattform, auf die wir keinen Einfluss haben.</p>
+<p><b>Hinweis:</b> Bitte gib in Texten und Covern keine sensiblen personenbezogenen Daten Dritter an.</p>
+
+<h3>9. Kontaktaufnahme</h3>
+<p>Wenn du uns per E-Mail kontaktierst, verarbeiten wir deine Angaben zur Bearbeitung der Anfrage (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Die E-Mail-Postfächer werden bei IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, bzw. im Rahmen von Microsoft 365 betrieben. Wir löschen deine Anfrage, sobald sie erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
+
+<h3>10. Deine Rechte</h3>
+<p>Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) sowie das Recht auf Widerspruch gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (Art. 21). Erteilte Einwilligungen kannst du jederzeit widerrufen (Art. 7 Abs. 3 DSGVO). Wende dich dazu an info@drayven.de.</p>
+
+<h3>11. Beschwerderecht</h3>
+<p>Du hast das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Zuständig für uns ist: Die Landesbeauftragte für Datenschutz und Informationsfreiheit der Freien Hansestadt Bremen, Arndtstraße 1, 27570 Bremerhaven, E-Mail: office@datenschutz.bremen.de, Internet: www.datenschutz.bremen.de.</p>
+
+<h3>12. Datensicherheit</h3>
+<p>Die Übertragung der Daten zwischen deinem Browser und unseren Seiten erfolgt verschlüsselt (TLS/HTTPS).</p>
+
+<h3>13. Aktualität</h3>
+<p>Stand: Oktober 2026. Wir passen diese Erklärung an, wenn sich unser Angebot oder die rechtlichen Vorgaben ändern.</p>
+
       </div>
     </div>
   </div>
+
   <script>
     // DRAYVEN – "Neueste Veröffentlichung" live von Spotify holen
     // WICHTIG: Hier die eigene Cloudflare-Worker-URL eintragen, die Du beim
     // Deployen bekommst (z.B. "https://drayven-latest.DEINNAME.workers.dev")
     const NEW_RELEASE_WORKER_URL = "https://drayven-latest.ntomixpro.workers.dev";
+
+    // Spotify-Inhalte (Player, Cover) werden erst nach Klick geladen
+    window.__spotifyOk = false;
+    function applyRelease() {
+      const data = window.__release; if (!data) return;
+      document.getElementById('new-release-cover').src = data.image;
+      document.getElementById('new-release-embed-wrap').innerHTML =
+        '<iframe src="https://open.spotify.com/embed/album/' + data.id + '?utm_source=generator&theme=0" ' +
+        'width="100%" height="152" style="border:none;" frameborder="0" allowfullscreen="" ' +
+        'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+    }
+    function loadSpotify() {
+      window.__spotifyOk = true;
+      document.getElementById('spotify-wrap').innerHTML =
+        '<iframe src="https://open.spotify.com/embed/artist/0u8iRkDlzVAihSqD0i78Od?utm_source=generator&theme=0" ' +
+        'width="100%" height="660" style="border-radius:12px;border:none;" frameborder="0" allowfullscreen="" ' +
+        'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+      applyRelease();
+    }
 
     (async function loadNewRelease() {
       try {
@@ -680,19 +761,15 @@
         const data = await res.json();
         if (data.error || !data.id) return;
 
-        document.getElementById('new-release-cover').src = data.image;
+        window.__release = data;
         document.getElementById('new-release-cover').alt = data.name;
         document.getElementById('new-release-name').textContent = data.name;
         document.getElementById('new-release-date').textContent =
           (data.type === 'single' ? 'Single' : 'Album') + ' · ' + data.release_date;
         document.getElementById('new-release-link').href = data.url;
 
-        document.getElementById('new-release-embed-wrap').innerHTML =
-          '<iframe src="https://open.spotify.com/embed/album/' + data.id + '?utm_source=generator&theme=0" ' +
-          'width="100%" height="152" style="border:none;" frameborder="0" allowfullscreen="" ' +
-          'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
-
         document.getElementById('new-release-section').style.display = 'block';
+        if (window.__spotifyOk) applyRelease();
       } catch (e) {
         // Kein Worker erreichbar o.ä. -> Box bleibt einfach unsichtbar, Seite läuft normal weiter
       }

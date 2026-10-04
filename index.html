@@ -469,6 +469,18 @@
     @media (prefers-reduced-motion:reduce){.portrait-wrap::before{animation:none}}
     @media(max-width:900px){.about-visual{display:flex !important}.portrait-wrap{max-width:340px;margin:8px auto 0}}
   </style>
+  <style>
+    .about-stats{flex-wrap:wrap}
+    .submit-cta{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:11px 22px;border-radius:999px;
+      background:linear-gradient(135deg,#8B5CF6,#06B6D4);color:#fff;text-decoration:none;font-family:'Space Mono',monospace;
+      box-shadow:0 0 24px rgba(139,92,246,.45);transition:transform .25s,box-shadow .25s}
+    .submit-cta span{font-size:11px;font-weight:700;letter-spacing:.14em}
+    .submit-cta small{font-size:8px;letter-spacing:.28em;opacity:.9}
+    .submit-cta:hover{transform:translateY(-2px);box-shadow:0 0 34px rgba(6,182,212,.6)}
+    .submit-cta.open small::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-right:6px;vertical-align:middle;animation:subpulse 1.4s infinite}
+    .submit-cta.soon{background:transparent;border:1px solid #2a2a2a;color:#888;box-shadow:none;cursor:default;pointer-events:none}
+    @keyframes subpulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}70%{box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  </style>
 </head>
 <body>
 
@@ -539,6 +551,8 @@
             </span>
             <span class="stat-l">Möglichkeiten</span>
           </div>
+          <div class="stat-divider"></div>
+          <a id="submit-btn" class="submit-cta" href="#" target="_blank" rel="noopener"><span>SONG EINREICHEN</span><small>DRAYVEN LIVE</small></a>
         </div>
         <div class="about-ctas">
           <a class="cta-primary" href="https://open.spotify.com/intl-de/artist/0u8iRkDlzVAihSqD0i78Od" target="_blank" rel="noopener">
@@ -730,6 +744,9 @@
 <h3>7. Externe Links</h3>
 <p>Diese Website enthält Links zu Spotify, YouTube, TikTok, Apple Music, SoundCloud und Amazon Music. Erst wenn du einen Link anklickst, werden Daten an den jeweiligen Anbieter übertragen. Es gelten dann deren Datenschutzbestimmungen.</p>
 
+<h3>7a. Anonyme Reichweitenmessung</h3>
+<p>Wir zählen, wie oft unsere Seiten aufgerufen werden, ohne dich zu identifizieren. Dabei setzen wir <b>keine Cookies</b> und speichern <b>keine Informationen auf deinem Gerät</b>. Beim Aufruf wird ein kurzes Signal an unseren Cloudflare-Worker gesendet. Gespeichert werden ausschließlich Tageszahlen je Seite (Aufrufe, geschätzte Einzelbesucher), die Herkunftsseite als Domain (zum Beispiel „TikTok“ oder „Google“) und das Land. Deine IP-Adresse wird nicht gespeichert. Um Einzelbesucher zu schätzen, wird kurzzeitig ein nicht umkehrbarer Zeichencode aus IP-Adresse, Browserkennung und einem täglich wechselnden Wert gebildet, der nach spätestens zwei Tagen gelöscht wird. Bots werden herausgefiltert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Interesse an der Auswertung der Reichweite und der Verbesserung des Angebots). Wenn dein Browser das „Do Not Track“-Signal sendet, zählen wir nicht. Du kannst der Messung außerdem jederzeit widersprechen (Art. 21 DSGVO), zum Beispiel per E-Mail an info@drayven.de.</p>
+
 <h3>8. DRAYVEN Live: Song-Einreichung</h3>
 <p><b>Daten:</b> Wenn du einen Song einreichst, verarbeiten wir die von dir eingegebenen Angaben: Künstlername, TikTok-Name, Songtitel, Link und/oder hochgeladene Audiodatei (MP3/WAV), Songlänge, optional Kurztext und Cover, deine Zustimmungen (mit Zeitpunkt) sowie den Einreichungszeitpunkt. Die Angabe der Pflichtfelder ist für die Teilnahme erforderlich, ohne sie ist eine Teilnahme nicht möglich.</p>
 <p><b>Zwecke und Rechtsgrundlagen:</b> Durchführung der Show (Warteliste, Reihenfolge, Abspielen, Bewertung, Feedback) auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Die Veröffentlichung von Künstlername, Songtitel und Songlänge in der öffentlichen Reihenfolge auf der Seite, im Live-Stream, in der Hit-Playlist sowie die Veröffentlichung von Ausschnitten als Clips auf Social Media beruht auf deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) bzw. der Durchführung der Teilnahme. Die Aufnahme in das DRAYVEN-Radio ist freiwillig und beruht ausschließlich auf deiner gesonderten Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die Rechte an deinem Song bleiben bei dir.</p>
@@ -807,6 +824,42 @@
       } catch (e) {
         // Kein Worker erreichbar o.ä. -> Box bleibt einfach unsichtbar, Seite läuft normal weiter
       }
+    })();
+  </script>
+
+  <script>
+    /* Anonyme Reichweitenmessung: keine Cookies, keine IP-Speicherung (siehe Datenschutzerklärung) */
+    (function () {
+      var API = "https://drayven-live.ntomixpro.workers.dev/api/";
+      try {
+        if (location.hash === "#nocount" || navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+        var send = function (path, data) {
+          try { fetch(API + path, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain" }, keepalive: true, credentials: "omit" }); } catch (e) {}
+        };
+        var dev = (window.matchMedia && matchMedia("(pointer:coarse)").matches) || innerWidth < 800 ? "mobile" : "desktop";
+        send("hit", { page: "home", ref: document.referrer || "", dev: dev });
+        var names = [["spotify.com", "Spotify"], ["youtube.com", "YouTube"], ["tiktok.com", "TikTok"], ["soundcloud.com", "SoundCloud"], ["music.apple.com", "Apple Music"], ["music.amazon", "Amazon Music"]];
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest("a[href]"); if (!a) return;
+          if (a.id === "submit-btn") { send("click", { page: "home", target: "Song einreichen" }); return; }
+          for (var i = 0; i < names.length; i++) if (a.href.indexOf(names[i][0]) > -1) { send("click", { page: "home", target: names[i][1] }); break; }
+        }, true);
+        var sp = document.getElementById("spotify-wrap");
+        if (sp) sp.addEventListener("click", function (e) { if (e.target.tagName === "BUTTON") send("click", { page: "home", target: "Spotify-Player" }); });
+      } catch (e) {}
+    })();
+  </script>
+  <script>
+    /* DRAYVEN Live verbinden. Wenn die Einreichungsseite öffentlich ist: LIVE_PUBLIC = true setzen. */
+    (function () {
+      var LIVE_URL = "https://drayven-live-site.ntomixpro.workers.dev/live";
+      var LIVE_PUBLIC = false;
+      var b = document.getElementById("submit-btn"); if (!b) return;
+      if (!LIVE_PUBLIC) { b.classList.add("soon"); b.removeAttribute("href"); b.removeAttribute("target"); b.setAttribute("aria-disabled", "true"); b.querySelector("small").textContent = "DRAYVEN LIVE · BALD"; return; }
+      b.href = LIVE_URL;
+      fetch("https://drayven-live.ntomixpro.workers.dev/api/show").then(function (r) { return r.json(); }).then(function (j) {
+        if (j && j.show && (j.show.state === "open" || j.show.state === "live") && !j.show.full) { b.classList.add("open"); b.querySelector("small").textContent = "EINREICHUNG OFFEN"; }
+      }).catch(function () {});
     })();
   </script>
 </body>

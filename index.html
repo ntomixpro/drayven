@@ -451,6 +451,7 @@
     .consent-box p{font-size:12px;color:#888;line-height:1.6;margin:10px 0 18px}
     .consent-box button{background:linear-gradient(135deg,#8B5CF6,#06B6D4);border:0;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;padding:12px 20px;border-radius:2px;cursor:pointer}
     .consent-box a{color:#06B6D4}
+    .consent-box button.alt{background:transparent;border:1px solid #8B5CF6;margin-left:6px}
   </style>
 </head>
 <body>
@@ -576,7 +577,7 @@
         <div class="consent-box">
           <p style="color:#e8e8e0;font-size:13px;margin-top:0;">Spotify-Player</p>
           <p>Beim Laden des Players werden Daten (z. B. deine IP-Adresse) an Spotify übertragen. Mehr dazu in der <a href="#datenschutz" onclick="document.getElementById('datenschutz-modal').style.display='flex'">Datenschutzerklärung</a>.</p>
-          <button type="button" onclick="loadSpotify()">SPOTIFY-PLAYER LADEN</button>
+          <button type="button" onclick="loadSpotify(false)">EINMAL LADEN</button> <button type="button" class="alt" onclick="loadSpotify(true)">IMMER LADEN (MERKEN)</button>
         </div>
       </div>
     </aside>
@@ -628,6 +629,8 @@
       <a href="#impressum" onclick="document.getElementById('impressum-modal').style.display='flex'">Impressum</a>
       &nbsp;·&nbsp;
       <a href="#datenschutz" onclick="document.getElementById('datenschutz-modal').style.display='flex'">Datenschutz</a>
+      &nbsp;·&nbsp;
+      <a href="#" onclick="resetSpotify();return false;">Spotify-Einstellung zurücksetzen</a>
     </p>
   </footer>
 
@@ -693,7 +696,7 @@
 <p>Die verwendeten Schriftarten werden von unseren eigenen Servern geladen. Es erfolgt dabei keine Verbindung zu Google.</p>
 
 <h3>5. Spotify-Player (nur nach Klick)</h3>
-<p>Auf drayven.de kannst du einen Spotify-Player einblenden. Er wird erst nach deinem Klick auf „Spotify-Player laden“ geladen. Dabei wird eine Verbindung zu Spotify AB, Regeringsgatan 19, 111 53 Stockholm, Schweden, hergestellt, und Spotify kann Daten wie deine IP-Adresse erhalten sowie Cookies setzen. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG), die du durch den Klick erteilst. Ohne Klick findet keine Übertragung statt. Weitere Informationen findest du in der Datenschutzerklärung von Spotify.</p>
+<p>Auf drayven.de kannst du einen Spotify-Player einblenden. Er wird erst nach deinem Klick auf „Spotify-Player laden“ geladen. Dabei wird eine Verbindung zu Spotify AB, Regeringsgatan 19, 111 53 Stockholm, Schweden, hergestellt, und Spotify kann Daten wie deine IP-Adresse erhalten sowie Cookies setzen. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG), die du durch den Klick erteilst. Ohne Klick findet keine Übertragung statt. Wenn du „Immer laden (merken)“ wählst, speichern wir diese Auswahl lokal in deinem Browser (Local Storage), damit du nicht bei jedem Besuch erneut klicken musst. Du kannst die Auswahl jederzeit über den Link „Spotify-Einstellung zurücksetzen“ in der Fußzeile von drayven.de widerrufen. Weitere Informationen findest du in der Datenschutzerklärung von Spotify.</p>
 
 <h3>6. Anzeige der neuesten Veröffentlichung</h3>
 <p>Beim Aufruf von drayven.de wird in deinem Browser eine Anfrage an einen von uns betriebenen Cloudflare-Worker gesendet, der öffentlich verfügbare Informationen zur neuesten Veröffentlichung (Titel, Cover, Datum) abruft. Dabei wird technisch bedingt deine IP-Adresse an Cloudflare übermittelt. Wir speichern darüber keine personenbezogenen Daten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (aktuelle und fehlerfreie Darstellung unseres Angebots).</p>
@@ -746,7 +749,8 @@
         'width="100%" height="152" style="border:none;" frameborder="0" allowfullscreen="" ' +
         'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
     }
-    function loadSpotify() {
+    function loadSpotify(remember) {
+      if (remember) { try { localStorage.setItem('drayven_spotify', '1'); } catch (e) {} }
       window.__spotifyOk = true;
       document.getElementById('spotify-wrap').innerHTML =
         '<iframe src="https://open.spotify.com/embed/artist/0u8iRkDlzVAihSqD0i78Od?utm_source=generator&theme=0" ' +
@@ -754,6 +758,10 @@
         'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
       applyRelease();
     }
+
+    function resetSpotify() { try { localStorage.removeItem('drayven_spotify'); } catch (e) {} location.reload(); }
+    // Wer "Immer laden" gewählt hat, bekommt den Player automatisch
+    try { if (localStorage.getItem('drayven_spotify') === '1') loadSpotify(false); } catch (e) {}
 
     (async function loadNewRelease() {
       try {

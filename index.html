@@ -508,7 +508,7 @@
 <body>
 
   <!-- BANNER -->
-  <div class="banner banner-gold"><span class="gold-sheen" aria-hidden="true"></span><span class="gold-sparks" aria-hidden="true"></span><div class="hero-frame"><img src="./hero.jpg" alt="DRAYVEN, Künstlerfoto mit Schriftzug" width="1640" height="656" fetchpriority="high"><div class="glitter" aria-hidden="true"></div></div></div>
+  <div class="banner banner-gold"><span class="gold-sheen" aria-hidden="true"></span><span class="gold-sparks" aria-hidden="true"></span><div class="hero-frame"><img src="./hero.jpg" alt="DRAYVEN, Künstlerfoto mit Schriftzug" width="2000" height="857" fetchpriority="high"><div class="glitter" aria-hidden="true"></div></div></div>
 
   <!-- PLATFORM BUTTONS -->
   <nav class="platforms" aria-label="DRAYVEN auf Plattformen">
@@ -859,17 +859,17 @@
     })();
   </script>
   <script>
-    /* Glitzer-Funken auf dem DRAYVEN-Schriftzug im Banner (Positionen im Originalbild 1640 x 656) */
+    /* Glitzer-Funken auf dem DRAYVEN-Schriftzug im Banner (Positionen im ausgelieferten Bild 2000 x 857) */
     (function () {
       var img = document.querySelector(".hero-frame img"), box = document.querySelector(".glitter");
       if (!img || !box) return;
-      var PTS = [[868,301,24],[884,356,18],[963,301,20],[1070,300,26],[1100,357,18],[1136,301,20],[1192,300,18],[1219,301,22],[1246,358,20],[1306,301,18],[1322,329,16],[1373,301,22],[1428,358,26],[1412,300,16]];
+      var PTS = [[1058,391,24],[1062,459,16],[1176,391,20],[1226,412,14],[1311,390,28],[1350,459,18],[1395,391,20],[1448,391,18],[1503,391,22],[1536,460,22],[1624,391,18],[1650,425,14],[1680,460,16],[1740,391,22],[1792,460,26],[1790,392,16]];
       function place() {
         var W = img.clientWidth, H = img.clientHeight; if (!W || !H) return;
         var pos = (getComputedStyle(img).objectPosition || "50% 50%").split(" ");
         var px = parseFloat(pos[0]) / 100, py = parseFloat(pos[1]) / 100; if (isNaN(px)) px = .5; if (isNaN(py)) py = .5;
-        var r = 1640 / 656, s, ox = 0, oy = 0;
-        if (W / H < r) { s = H / 656; ox = (W - 1640 * s) * px; } else { s = W / 1640; oy = (H - 656 * s) * py; }
+        var r = 2000 / 857, s, ox = 0, oy = 0;
+        if (W / H < r) { s = H / 857; ox = (W - 2000 * s) * px; } else { s = W / 2000; oy = (H - 857 * s) * py; }
         box.innerHTML = "";
         PTS.forEach(function (p, i) {
           var x = ox + p[0] * s, y = oy + p[1] * s;

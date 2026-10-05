@@ -459,7 +459,24 @@
     .brand-row a:hover{color:#fff;border-color:#8B5CF6;box-shadow:0 0 18px rgba(139,92,246,.45);transform:translateY(-2px)}
   </style>
   <style>
-    .banner img{height:clamp(240px,24.5vw,470px) !important;max-height:none !important;aspect-ratio:auto !important;object-position:center 8% !important}
+    
+    /* Banner: Foto auf goldschimmerndem Hintergrund */
+    .banner.banner-gold{position:relative;overflow:hidden;line-height:0;padding:44px 24px;
+      background:radial-gradient(ellipse 70% 120% at 50% -10%,rgba(224,184,92,.34),transparent 62%),radial-gradient(ellipse 60% 100% at 50% 120%,rgba(176,128,48,.22),transparent 60%),#0b0a08}
+    .gold-sheen{position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(105deg,transparent 35%,rgba(255,222,140,.17) 47%,rgba(255,240,190,.28) 50%,rgba(255,222,140,.17) 53%,transparent 65%);
+      background-size:260% 100%;animation:goldsweep 9s ease-in-out infinite}
+    .gold-sparks{position:absolute;inset:0;pointer-events:none;opacity:.8;
+      background-image:radial-gradient(2px 2px at 8% 30%,#ffe9a6,transparent),radial-gradient(1.6px 1.6px at 18% 78%,#ffd978,transparent),radial-gradient(2px 2px at 31% 18%,#fff1c0,transparent),radial-gradient(1.5px 1.5px at 47% 88%,#ffd978,transparent),radial-gradient(2px 2px at 63% 12%,#ffe9a6,transparent),radial-gradient(1.6px 1.6px at 78% 82%,#fff1c0,transparent),radial-gradient(2px 2px at 90% 26%,#ffd978,transparent),radial-gradient(1.4px 1.4px at 96% 70%,#ffe9a6,transparent);
+      animation:goldtwinkle 4.5s ease-in-out infinite alternate}
+    .hero-frame{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:3px;border-radius:18px;
+      background:linear-gradient(135deg,#f8e7a8 0%,#c79a3f 30%,#f8e7a8 55%,#a97b2c 80%,#f8e7a8 100%);
+      box-shadow:0 0 0 1px rgba(255,226,150,.25),0 0 46px rgba(224,184,92,.38),0 18px 60px rgba(0,0,0,.6)}
+    .hero-frame img{display:block;width:100% !important;height:clamp(250px,40vw,500px) !important;max-height:none !important;aspect-ratio:auto !important;object-fit:cover;object-position:center 22% !important;border-radius:15px;background:#080808}
+    @keyframes goldsweep{0%{background-position:130% 0}100%{background-position:-30% 0}}
+    @keyframes goldtwinkle{from{opacity:.35}to{opacity:.95}}
+    @media(max-width:700px){.banner.banner-gold{padding:22px 14px}.hero-frame{border-radius:14px}.hero-frame img{height:250px !important;object-position:33% center !important;border-radius:11px}}
+    @media (prefers-reduced-motion:reduce){.gold-sheen,.gold-sparks{animation:none}}
     .about-inner{grid-template-columns:1fr !important}
     .about-text{max-width:820px}
     @media(max-width:700px){.banner img{aspect-ratio:auto;height:240px;object-position:34% center !important}}
@@ -480,9 +497,7 @@
 <body>
 
   <!-- BANNER -->
-  <div class="banner">
-    <img src="./hero.jpg" alt="DRAYVEN, Künstlerfoto mit Schriftzug" width="1640" height="656" fetchpriority="high">
-  </div>
+  <div class="banner banner-gold"><span class="gold-sheen" aria-hidden="true"></span><span class="gold-sparks" aria-hidden="true"></span><div class="hero-frame"><img src="./hero.jpg" alt="DRAYVEN, Künstlerfoto mit Schriftzug" width="1640" height="656" fetchpriority="high"></div></div>
 
   <!-- PLATFORM BUTTONS -->
   <nav class="platforms" aria-label="DRAYVEN auf Plattformen">

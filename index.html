@@ -459,15 +459,17 @@
     .brand-row a:hover{color:#fff;border-color:#8B5CF6;box-shadow:0 0 18px rgba(139,92,246,.45);transform:translateY(-2px)}
   </style>
   <style>
-    .portrait-wrap{position:relative;width:100%;max-width:420px;padding:3px;border-radius:18px;
+    .portrait-wrap{position:relative;width:100%;max-width:580px;padding:3px;border-radius:18px;
       background:linear-gradient(135deg,#8B5CF6,#06B6D4);
       box-shadow:0 0 36px rgba(139,92,246,.55),0 0 90px rgba(6,182,212,.28)}
     .portrait-wrap::before{content:"";position:absolute;inset:-26px;z-index:-1;border-radius:34px;
       background:radial-gradient(circle,rgba(139,92,246,.35),rgba(6,182,212,.18) 55%,transparent 72%);filter:blur(22px);animation:pglow 6s ease-in-out infinite alternate}
     .portrait-img{display:block;width:100%;height:auto;border-radius:15px}
+    .about-inner{grid-template-columns:1fr minmax(0,580px) !important;gap:48px !important}
+    .about-stats{gap:20px !important}
     @keyframes pglow{from{opacity:.7;transform:scale(.97)}to{opacity:1;transform:scale(1.04)}}
     @media (prefers-reduced-motion:reduce){.portrait-wrap::before{animation:none}}
-    @media(max-width:900px){.about-visual{display:flex !important}.portrait-wrap{max-width:340px;margin:8px auto 0}}
+    @media(max-width:900px){.about-inner{grid-template-columns:1fr !important}.about-visual{display:flex !important}.portrait-wrap{max-width:520px;margin:8px auto 0}}
   </style>
   <style>
     .about-stats{flex-wrap:wrap}
@@ -582,7 +584,7 @@
         </div>
       </div>
       <div class="about-visual">
-        <div class="portrait-wrap"><img src="./portrait.jpg" alt="DRAYVEN, Portrait des Künstlers" class="portrait-img" width="960" height="960" loading="eager"></div>
+        <div class="portrait-wrap"><img src="./portrait-wide.jpg" alt="DRAYVEN, Portrait des Künstlers" class="portrait-img" width="1500" height="600" loading="eager"></div>
       </div>
     </div>
   </section>
@@ -750,6 +752,7 @@
 <h3>8. DRAYVEN Live: Song-Einreichung</h3>
 <p><b>Daten:</b> Wenn du einen Song einreichst, verarbeiten wir die von dir eingegebenen Angaben: Künstlername, TikTok-Name, Songtitel, Link und/oder hochgeladene Audiodatei (MP3/WAV), Songlänge, optional Kurztext und Cover, deine Zustimmungen (mit Zeitpunkt) sowie den Einreichungszeitpunkt. Die Angabe der Pflichtfelder ist für die Teilnahme erforderlich, ohne sie ist eine Teilnahme nicht möglich.</p>
 <p><b>Zwecke und Rechtsgrundlagen:</b> Durchführung der Show (Warteliste, Reihenfolge, Abspielen, Bewertung, Feedback) auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Die Veröffentlichung von Künstlername, Songtitel und Songlänge in der öffentlichen Reihenfolge auf der Seite, im Live-Stream, in der Hit-Playlist sowie die Veröffentlichung von Ausschnitten als Clips auf Social Media beruht auf deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) bzw. der Durchführung der Teilnahme. Die Aufnahme in das DRAYVEN-Radio ist freiwillig und beruht ausschließlich auf deiner gesonderten Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die Rechte an deinem Song bleiben bei dir.</p>
+<p><b>Missbrauchsschutz:</b> Pro Show ist standardmäßig nur ein Song pro Gerät möglich. Dafür bilden wir beim Einreichen aus IP-Adresse, Browserkennung und Show einen nicht umkehrbaren Zeichencode, der von uns nicht auf dich zurückgeführt wird. Die IP-Adresse selbst wird nicht gespeichert. Der Code wird spätestens 180 Tage nach der Einreichung gelöscht (Art. 6 Abs. 1 lit. f DSGVO, Schutz vor Missbrauch und Fairness der Teilnahme).</p>
 <p><b>Songlänge:</b> Um die Länge deines Songs zu ermitteln, ruft unser Server bei Spotify, YouTube bzw. SoundCloud die öffentliche Seite deines Links ab. Dabei wird nur der von dir angegebene Link verwendet, keine weiteren Daten von dir.</p>
 <p><b>Widerruf:</b> Du kannst jede Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen, zum Beispiel per E-Mail an info@drayven.de. Dein Song wird dann zeitnah aus Radio und Playlist entfernt. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt.</p>
 <p><b>Speicherdauer:</b> Einreichungsdaten (Name, TikTok-Name, Link, Songlänge, Kurztext, Cover) werden spätestens sechs Monate nach der jeweiligen Show gelöscht. Hochgeladene Audiodateien werden nach der Show gelöscht, sofern du nicht am Radio teilnimmst. Radio-Dateien werden bis zu deinem Widerruf bzw. bis zur Entfernung aus dem Radio gespeichert. Nachweise über deine Zustimmungen können zur Verteidigung gegen Rechtsansprüche bis zum Ablauf der gesetzlichen Verjährungsfrist aufbewahrt werden (Art. 6 Abs. 1 lit. f DSGVO).</p>
